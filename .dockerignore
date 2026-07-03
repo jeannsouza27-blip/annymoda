@@ -8,5 +8,3 @@ npm-debug.log*
 README.md
 .vscode
 .idea
-public/uploads/products/*
-!public/uploads/products/.gitkeep
