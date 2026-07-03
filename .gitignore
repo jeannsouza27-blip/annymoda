@@ -40,9 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# uploaded product images (user content, not source-controlled)
-/public/uploads/products/*
-!/public/uploads/products/.gitkeep
 
 # editor / local tooling (machine-specific, not project source)
 .vscode/
