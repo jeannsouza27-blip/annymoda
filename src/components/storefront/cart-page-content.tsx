@@ -60,15 +60,15 @@ export function CartPageContent() {
                   <button
                     aria-label="Remover item"
                     onClick={() => removeItem(item.productId, item.variantId)}
-                    className="text-muted-foreground hover:text-destructive"
+                    className="-m-2 p-2 text-muted-foreground hover:text-destructive"
                   >
                     <X className="size-4" />
                   </button>
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 rounded-md border border-border">
+                  <div className="flex items-center gap-1 rounded-md border border-border">
                     <button
-                      className="p-2 disabled:opacity-40"
+                      className="p-2.5 disabled:opacity-40"
                       disabled={item.quantity <= 1}
                       onClick={() => setQuantity(item.productId, item.quantity - 1, item.variantId)}
                       aria-label="Diminuir quantidade"
@@ -77,7 +77,7 @@ export function CartPageContent() {
                     </button>
                     <span className="w-5 text-center text-sm">{item.quantity}</span>
                     <button
-                      className="p-2 disabled:opacity-40"
+                      className="p-2.5 disabled:opacity-40"
                       disabled={item.quantity >= item.stock}
                       onClick={() => setQuantity(item.productId, item.quantity + 1, item.variantId)}
                       aria-label="Aumentar quantidade"

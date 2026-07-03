@@ -48,7 +48,7 @@ export function ProductCard({ product }: { product: ProductWithImages }) {
           )}
         </div>
 
-        <div className="absolute bottom-3 right-3 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+        <div className="absolute bottom-3 right-3 opacity-100 transition-all duration-300 lg:translate-y-2 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100">
           <AddToCartButton product={product} size="sm" />
         </div>
       </div>
