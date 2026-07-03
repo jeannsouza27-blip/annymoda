@@ -3,62 +3,112 @@ import bcrypt from "bcryptjs"
 
 const prisma = new PrismaClient()
 
+const uploads = (file: string) => `/uploads/products/${file}`
+
 const categories = [
   {
     name: "Blazers",
     slug: "blazers",
     description: "Alfaiataria impecável para liderar com presença.",
-    imageUrl: "https://picsum.photos/seed/anny-cat-blazers/900/1100",
+    imageUrl: uploads("blazer-azul-serenity-calca-jeans.jpg.jpeg"),
   },
   {
     name: "Blusas",
     slug: "blusas",
     description: "Peças fluidas que unem conforto e sofisticação.",
-    imageUrl: "https://picsum.photos/seed/anny-cat-blusas/900/1100",
+    imageUrl: uploads("blusa-frente-unica-off-white-calca-flare-vinho.jpg.jpeg"),
   },
   {
     name: "Calças",
     slug: "calcas",
     description: "Modelagens precisas para o dia a dia executivo.",
-    imageUrl: "https://picsum.photos/seed/anny-cat-calcas/900/1100",
+    imageUrl: uploads("blusa-frente-unica-terracota-calca-pantalona-preta.jpg.jpeg"),
   },
   {
     name: "Conjuntos",
     slug: "conjuntos",
     description: "Looks completos, prontos para grandes decisões.",
-    imageUrl: "https://picsum.photos/seed/anny-cat-conjuntos/900/1100",
+    imageUrl: uploads("conjunto-alfaiataria-vinho-blazer-calca-flare.jpg.jpeg"),
   },
 ]
 
-const productNames: Record<string, string[]> = {
-  blazers: [
-    "Blazer Alfaiataria Essencial",
-    "Blazer Cropped Executivo",
-    "Blazer Duplo Botão Premium",
-    "Blazer Oversized Cinza Grafite",
-    "Blazer Acinturado Preto",
-  ],
-  blusas: [
-    "Blusa Seda Manga Longa",
-    "Blusa Gola Laço Marfim",
-    "Blusa Alfaiataria Sem Manga",
-    "Blusa Tricot Dourada",
-    "Blusa Amarração Frontal",
-  ],
-  calcas: [
-    "Calça Alfaiataria Pantalona",
-    "Calça Reta Premium",
-    "Calça Cintura Alta Bege",
-    "Calça Cigarrete Preta",
-    "Calça Wide Leg Executiva",
-  ],
-  conjuntos: [
-    "Conjunto Blazer & Calça Preto",
-    "Conjunto Alfaiataria Bege",
-    "Conjunto Cropped & Saia Midi",
-    "Conjunto Executivo Dourado",
-  ],
-}
+const realProducts: {
+  file: string
+  category: string
+  name: string
+  description: string
+}[] = [
+  {
+    file: "blazer-azul-serenity-calca-jeans.jpg.jpeg",
+    category: "blazers",
+    name: "Blazer Azul Serenity com Calça Jeans",
+    description:
+      "Blazer alfaiatado em azul serenity, caimento estruturado e botões dourados, combinado com calça jeans wide leg para um look executivo com toque descontraído.",
+  },
+  {
+    file: "blazer-verde-militar-blusa-branca-jeans.jpg.jpeg",
+    category: "blazers",
+    name: "Blazer Verde Militar com Blusa Branca",
+    description:
+      "Blazer alfaiatado verde militar sobre blusa branca básica e calça jeans reta, uma combinação versátil para o dia a dia corporativo.",
+  },
+  {
+    file: "colete-alfaiataria-caramelo-body-marrom-jeans.jpg.jpeg",
+    category: "blazers",
+    name: "Colete Alfaiataria Caramelo com Body Marrom",
+    description:
+      "Colete de alfaiataria caramelo sobreposto a body marrom, finalizado com calça jeans wide leg — sobreposição elegante para compor looks autorais.",
+  },
+  {
+    file: "blusa-babados-preta-calca-alfaiataria-azul-marinho.jpg.jpeg",
+    category: "blusas",
+    name: "Blusa Babados Preta com Calça Azul Marinho",
+    description:
+      "Blusa preta com babados nas mangas e gola V, combinada com calça de alfaiataria azul marinho de cintura alta e cinto.",
+  },
+  {
+    file: "blusa-babados-preta-calca-alfaiataria-azul-royal.jpg.jpeg",
+    category: "blusas",
+    name: "Blusa Babados Preta com Calça Azul Royal",
+    description:
+      "Blusa preta com babados nas mangas e gola V, combinada com calça de alfaiataria azul royal de cintura alta e cinto.",
+  },
+  {
+    file: "blusa-babados-preta-calca-alfaiataria-preta.jpg.jpeg",
+    category: "blusas",
+    name: "Blusa Babados Preta com Calça Preta",
+    description:
+      "Look monocromático com blusa preta de babados nas mangas e calça de alfaiataria preta de cintura alta.",
+  },
+  {
+    file: "blusa-babados-preta-calca-alfaiataria-rose.jpg.jpeg",
+    category: "blusas",
+    name: "Blusa Babados Preta com Calça Rose",
+    description:
+      "Blusa preta com babados nas mangas e gola V, combinada com calça de alfaiataria rose de cintura alta e cinto.",
+  },
+  {
+    file: "blusa-frente-unica-off-white-calca-flare-vinho.jpg.jpeg",
+    category: "blusas",
+    name: "Blusa Frente Única Off White com Calça Flare Vinho",
+    description:
+      "Blusa frente única off white com pregas frontais, combinada com calça flare vinho de cintura alta e cinto — elegância para ocasiões especiais.",
+  },
+  {
+    file: "blusa-frente-unica-terracota-calca-pantalona-preta.jpg.jpeg",
+    category: "calcas",
+    name: "Calça Pantalona Preta com Blusa Terracota",
+    description:
+      "Calça pantalona preta de cintura alta, combinada com blusa frente única terracota com pregas frontais.",
+  },
+  {
+    file: "conjunto-alfaiataria-vinho-blazer-calca-flare.jpg.jpeg",
+    category: "conjuntos",
+    name: "Conjunto Alfaiataria Vinho Blazer e Calça Flare",
+    description:
+      "Conjunto completo de alfaiataria vinho, blazer estruturado com botões dourados e calça flare, para quando a ocasião pede autoridade e sofisticação.",
+  },
+]
 
 function slugify(input: string) {
   return input
@@ -94,50 +144,45 @@ async function main() {
     )
   )
 
-  let counter = 0
-  for (const category of createdCategories) {
-    const names = productNames[category.slug] ?? []
-    for (const [index, name] of names.entries()) {
-      counter += 1
-      const priceCents = 39900 + ((counter * 3700) % 42000)
-      const onSale = counter % 4 === 0
-      const isFeatured = counter % 3 === 0
-      const daysAgo = counter % 5 === 0 ? counter : counter * 9
-      const createdAt = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000)
-      const slug = `${slugify(name)}-${category.slug}-${index}`
+  const categoryBySlug = new Map(createdCategories.map((c) => [c.slug, c]))
 
-      await prisma.product.create({
-        data: {
-          name,
-          slug,
-          description:
-            "Peça desenvolvida em tecido nobre, com caimento estudado para transmitir autoridade e elegância em qualquer ambiente corporativo. Modelagem exclusiva Anny Moda Executiva.",
-          priceCents,
-          compareAtPriceCents: onSale ? Math.round(priceCents * 1.25) : null,
-          stock: 12 + (counter % 8),
-          categoryId: category.id,
-          isFeatured,
-          installmentsMax: 10,
-          createdAt,
-          images: {
-            create: [
-              {
-                url: `https://picsum.photos/seed/anny-${category.slug}-${index}-a/900/1200`,
-                altText: name,
-                isPrimary: true,
-                position: 0,
-              },
-              {
-                url: `https://picsum.photos/seed/anny-${category.slug}-${index}-b/900/1200`,
-                altText: name,
-                isPrimary: false,
-                position: 1,
-              },
-            ],
-          },
+  let counter = 0
+  for (const [index, item] of realProducts.entries()) {
+    const category = categoryBySlug.get(item.category)
+    if (!category) continue
+
+    counter += 1
+    const priceCents = 39900 + ((counter * 3700) % 42000)
+    const onSale = counter % 4 === 0
+    const isFeatured = counter % 3 === 0
+    const daysAgo = counter % 5 === 0 ? counter : counter * 9
+    const createdAt = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000)
+    const slug = `${slugify(item.name)}-${index}`
+
+    await prisma.product.create({
+      data: {
+        name: item.name,
+        slug,
+        description: item.description,
+        priceCents,
+        compareAtPriceCents: onSale ? Math.round(priceCents * 1.25) : null,
+        stock: 12 + (counter % 8),
+        categoryId: category.id,
+        isFeatured,
+        installmentsMax: 10,
+        createdAt,
+        images: {
+          create: [
+            {
+              url: uploads(item.file),
+              altText: item.name,
+              isPrimary: true,
+              position: 0,
+            },
+          ],
         },
-      })
-    }
+      },
+    })
   }
 
   const adminPasswordPlain = "AnnyAdmin@2026"
@@ -251,7 +296,7 @@ async function main() {
     data: {
       title: "Elegância para mulheres que lideram.",
       subtitle: "Nova coleção de alfaiataria executiva",
-      imageUrl: "https://picsum.photos/seed/anny-hero-main/1920/1080",
+      imageUrl: "/uploads/banner-home.png",
       ctaLabel: "Comprar Agora",
       ctaHref: "/novidades",
       placement: BannerPlacement.HERO,

@@ -16,12 +16,12 @@ export default function SobrePage() {
     <div>
       <section className="relative flex h-[50vh] min-h-[340px] items-center justify-center overflow-hidden bg-sidebar text-center">
         <Image
-          src="https://picsum.photos/seed/anny-atelie/1600/900"
-          alt="Ateliê da Anny Moda Executiva"
+          src="/uploads/products/conjunto-alfaiataria-vinho-blazer-calca-flare.jpg.jpeg"
+          alt="Anny Moda Executiva"
           fill
           priority
           sizes="100vw"
-          className="object-cover opacity-50"
+          className="object-cover object-top opacity-50"
         />
         <div className="relative z-10 px-6">
           <p className="mb-4 text-xs font-medium uppercase tracking-[0.4em] text-gold-400">

@@ -41,7 +41,7 @@ export function ProductImageGallery({
                 alt={image.altText || productName}
                 fill
                 sizes="80px"
-                className="object-cover"
+                className="object-contain"
               />
             </button>
           ))}

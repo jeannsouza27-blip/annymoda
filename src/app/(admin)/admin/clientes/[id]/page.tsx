@@ -1,14 +1,9 @@
 import { notFound } from "next/navigation"
-import Link from "next/link"
 import { getCustomerById } from "@/services/user-service"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { AdminDataTable, type AdminDataTableColumn } from "@/components/admin/admin-data-table"
-import { ORDER_STATUS_BADGE_CLASSES, ORDER_STATUS_LABELS } from "@/components/admin/order-status"
-import { formatCurrency, formatDate } from "@/lib/format"
-
-type CustomerDetail = NonNullable<Awaited<ReturnType<typeof getCustomerById>>>
-type OrderRow = CustomerDetail["orders"][number]
+import { CustomerOrdersTable } from "@/components/admin/customer-orders-table"
+import { formatDate } from "@/lib/format"
 
 export default async function AdminCustomerDetailPage({
   params,
@@ -19,40 +14,6 @@ export default async function AdminCustomerDetailPage({
   const customer = await getCustomerById(id)
 
   if (!customer) notFound()
-
-  const columns: AdminDataTableColumn<OrderRow>[] = [
-    {
-      key: "orderNumber",
-      header: "Pedido",
-      cell: (order) => (
-        <Link
-          href={`/admin/pedidos/${order.id}`}
-          className="font-medium text-foreground hover:text-gold-600"
-        >
-          {order.orderNumber}
-        </Link>
-      ),
-    },
-    {
-      key: "status",
-      header: "Status",
-      cell: (order) => (
-        <Badge className={ORDER_STATUS_BADGE_CLASSES[order.status]} variant="outline">
-          {ORDER_STATUS_LABELS[order.status]}
-        </Badge>
-      ),
-    },
-    {
-      key: "total",
-      header: "Total",
-      cell: (order) => formatCurrency(order.totalCents),
-    },
-    {
-      key: "date",
-      header: "Data",
-      cell: (order) => <span className="text-muted-foreground">{formatDate(order.createdAt)}</span>,
-    },
-  ]
 
   return (
     <div className="space-y-6">
@@ -122,12 +83,7 @@ export default async function AdminCustomerDetailPage({
           <CardTitle>Histórico de pedidos</CardTitle>
         </CardHeader>
         <CardContent>
-          <AdminDataTable
-            columns={columns}
-            data={customer.orders}
-            rowKey={(order) => order.id}
-            emptyMessage="Este cliente ainda não fez pedidos."
-          />
+          <CustomerOrdersTable orders={customer.orders} />
         </CardContent>
       </Card>
     </div>

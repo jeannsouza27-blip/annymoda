@@ -23,7 +23,7 @@ export function ProductCard({ product }: { product: ProductWithImages }) {
             alt={primaryImage.altText || product.name}
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-            className="object-cover transition-opacity duration-500 group-hover:opacity-0"
+            className="object-contain transition-opacity duration-500 group-hover:opacity-0"
             priority={false}
           />
         )}
@@ -33,7 +33,7 @@ export function ProductCard({ product }: { product: ProductWithImages }) {
             alt={secondaryImage.altText || product.name}
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-            className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+            className="object-contain opacity-0 transition-opacity duration-500 group-hover:opacity-100"
           />
         )}
 

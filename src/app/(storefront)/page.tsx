@@ -79,7 +79,7 @@ export default async function HomePage() {
                   alt={category.name}
                   fill
                   sizes="(min-width: 1024px) 22vw, 45vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="object-contain transition-transform duration-500 group-hover:scale-105"
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />

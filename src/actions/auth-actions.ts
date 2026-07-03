@@ -27,10 +27,16 @@ export async function loginAction(input: unknown, callbackUrl?: string) {
   }
 
   try {
+    let redirectTo = callbackUrl
+    if (!redirectTo) {
+      const user = await getUserByEmail(parsed.data.email)
+      redirectTo = user?.role === "ADMIN" ? "/admin" : "/"
+    }
+
     await signIn("credentials", {
       email: parsed.data.email,
       password: parsed.data.password,
-      redirectTo: callbackUrl || "/",
+      redirectTo,
     })
     return { success: true as const }
   } catch (error) {

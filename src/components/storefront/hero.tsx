@@ -5,24 +5,27 @@ import type { Banner } from "@prisma/client"
 
 export function Hero({ banner }: { banner: Banner }) {
   return (
-    <section className="relative flex h-[92vh] min-h-[560px] w-full items-end overflow-hidden bg-primary text-primary-foreground">
+    <section className="relative flex h-[70vh] min-h-[420px] w-full items-center overflow-hidden bg-primary text-primary-foreground sm:h-[85vh] sm:min-h-[560px]">
+      {/* This banner photo was shot wide (landscape) specifically for this
+          slot, with clear space on the left for text — a plain full-bleed
+          cover works well here, unlike the tall 9:16 product photos. */}
       <Image
         src={banner.imageUrl}
         alt=""
         fill
         priority
         sizes="100vw"
-        className="object-cover"
+        className="object-cover object-top"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/15 to-transparent" />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-20 sm:px-8 sm:pb-24">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 sm:px-8">
         {banner.subtitle && (
           <p className="mb-4 text-xs font-medium uppercase tracking-[0.4em] text-gold-400">
             {banner.subtitle}
           </p>
         )}
-        <h1 className="max-w-2xl font-heading text-4xl italic leading-[1.1] text-white sm:text-6xl">
+        <h1 className="max-w-lg font-heading text-4xl italic leading-[1.1] text-white sm:max-w-xl sm:text-6xl">
           {banner.title}
         </h1>
         {banner.ctaLabel && banner.ctaHref && (

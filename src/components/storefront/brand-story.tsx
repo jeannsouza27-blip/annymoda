@@ -6,13 +6,13 @@ export function BrandStory() {
   return (
     <section className="bg-secondary/40">
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-28">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-md">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-muted">
           <Image
-            src="https://picsum.photos/seed/anny-founders/900/1100"
-            alt="Mãe e filha, fundadoras da Anny Moda Executiva, no ateliê da marca"
+            src="/uploads/products/blazer-azul-serenity-calca-jeans.jpg.jpeg"
+            alt="Look Anny Moda Executiva"
             fill
             sizes="(min-width: 1024px) 45vw, 100vw"
-            className="object-cover"
+            className="object-contain"
           />
         </div>
 

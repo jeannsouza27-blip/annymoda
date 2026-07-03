@@ -14,9 +14,20 @@ export type InstagramFeedItem = {
 // Static placeholder feed — INSTAGRAM_GRAPH_ACCESS_TOKEN isn't configured
 // yet in this environment. Swap the `items` prop for data fetched from the
 // Instagram Graph API later without changing this component's shape.
-const fallbackFeed: InstagramFeedItem[] = Array.from({ length: 8 }).map((_, i) => ({
+const feedPhotos = [
+  "blazer-azul-serenity-calca-jeans.jpg.jpeg",
+  "blazer-verde-militar-blusa-branca-jeans.jpg.jpeg",
+  "blusa-babados-preta-calca-alfaiataria-azul-marinho.jpg.jpeg",
+  "blusa-babados-preta-calca-alfaiataria-azul-royal.jpg.jpeg",
+  "blusa-babados-preta-calca-alfaiataria-preta.jpg.jpeg",
+  "blusa-babados-preta-calca-alfaiataria-rose.jpg.jpeg",
+  "blusa-frente-unica-off-white-calca-flare-vinho.jpg.jpeg",
+  "colete-alfaiataria-caramelo-body-marrom-jeans.jpg.jpeg",
+]
+
+const fallbackFeed: InstagramFeedItem[] = feedPhotos.map((file, i) => ({
   id: `fallback-${i}`,
-  imageUrl: `https://picsum.photos/seed/anny-insta-${i}/600/600`,
+  imageUrl: `/uploads/products/${file}`,
   alt: "Publicação do Instagram da Anny Moda Executiva",
 }))
 
@@ -42,7 +53,7 @@ export function InstagramFeedGrid({ items = fallbackFeed }: { items?: InstagramF
               alt={item.alt}
               fill
               sizes="(min-width: 1024px) 25vw, 50vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/30">
               <InstagramIcon className="size-6 text-white opacity-0 transition-opacity group-hover:opacity-100" />
