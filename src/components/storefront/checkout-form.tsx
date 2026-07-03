@@ -74,7 +74,11 @@ export function CheckoutForm() {
   function onSubmit(values: CheckoutFormValues) {
     startTransition(async () => {
       const result = await createOrderAndCheckout({
-        items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
+        items: items.map((item) => ({
+          productId: item.productId,
+          variantId: item.variantId,
+          quantity: item.quantity,
+        })),
         couponCode: values.couponCode || undefined,
         recipientName: values.recipientName,
         phone: values.phone,
@@ -296,9 +300,10 @@ export function CheckoutForm() {
           <CardContent className="space-y-4">
             <ul className="space-y-2 text-sm">
               {items.map((item) => (
-                <li key={item.productId} className="flex justify-between gap-2">
+                <li key={`${item.productId}::${item.variantId ?? ""}`} className="flex justify-between gap-2">
                   <span className="text-muted-foreground">
-                    {item.name} × {item.quantity}
+                    {item.name}
+                    {item.variantLabel ? ` (${item.variantLabel})` : ""} × {item.quantity}
                   </span>
                   <span className="shrink-0">{formatCurrency(item.priceCents * item.quantity)}</span>
                 </li>

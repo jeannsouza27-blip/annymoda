@@ -7,8 +7,7 @@ import { isInWishlist } from "@/services/wishlist-service"
 import { getOptionalUser } from "@/lib/auth-guards"
 import { ProductImageGallery } from "@/components/storefront/product-image-gallery"
 import { PriceTag } from "@/components/storefront/price-tag"
-import { AddToCartButton } from "@/components/storefront/add-to-cart-button"
-import { WishlistButton } from "@/components/storefront/wishlist-button"
+import { ProductPurchasePanel } from "@/components/storefront/product-purchase-panel"
 import { StarRating } from "@/components/storefront/star-rating"
 import { ReviewList } from "@/components/storefront/review-list"
 import { ReviewForm } from "@/components/storefront/review-form"
@@ -16,7 +15,7 @@ import { Breadcrumbs } from "@/components/storefront/breadcrumbs"
 import { ProductGrid } from "@/components/storefront/product-grid"
 import { SectionHeading } from "@/components/shared/section-heading"
 import { siteConfig } from "@/lib/constants"
-import { cn } from "@/lib/utils"
+import { totalStock } from "@/lib/utils"
 
 export async function generateMetadata({
   params,
@@ -62,6 +61,7 @@ export default async function ProductPage({
   const averageRating =
     reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0
   const primaryImage = product.images.find((i) => i.isPrimary) ?? product.images[0]
+  const inStock = totalStock(product) > 0
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -75,8 +75,7 @@ export default async function ProductPage({
       url: `${siteConfig.url}/produto/${product.slug}`,
       priceCurrency: "BRL",
       price: (product.priceCents / 100).toFixed(2),
-      availability:
-        product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      availability: inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
     },
     ...(reviews.length > 0 && {
       aggregateRating: {
@@ -130,23 +129,7 @@ export default async function ProductPage({
             className="text-xl"
           />
 
-          <p
-            className={cn(
-              "text-sm font-medium",
-              product.stock > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-destructive"
-            )}
-          >
-            {product.stock > 0
-              ? product.stock <= 5
-                ? `Últimas ${product.stock} unidades`
-                : "Em estoque"
-              : "Produto esgotado"}
-          </p>
-
-          <div className="flex items-center gap-3">
-            <AddToCartButton product={product} size="lg" className="flex-1" />
-            <WishlistButton productId={product.id} initialActive={wishlisted} />
-          </div>
+          <ProductPurchasePanel product={product} wishlisted={wishlisted} />
 
           <div className="space-y-2 border-t border-border pt-6">
             <h2 className="font-heading text-lg">Descrição</h2>

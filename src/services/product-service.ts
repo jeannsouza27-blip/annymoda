@@ -2,7 +2,11 @@ import { prisma } from "@/lib/prisma"
 import type { Prisma } from "@prisma/client"
 
 const productWithImages = {
-  include: { images: { orderBy: { position: "asc" as const } }, category: true },
+  include: {
+    images: { orderBy: { position: "asc" as const } },
+    variants: { orderBy: [{ color: "asc" as const }, { size: "asc" as const }] },
+    category: true,
+  },
 } satisfies Prisma.ProductDefaultArgs
 
 export type ProductWithImages = Prisma.ProductGetPayload<typeof productWithImages>
@@ -96,14 +100,16 @@ export type CreateProductInput = {
   isFeatured?: boolean
   installmentsMax?: number
   images: { url: string; altText?: string; isPrimary?: boolean; position?: number }[]
+  variants?: { color?: string; size?: string; stock: number }[]
 }
 
 export function createProduct(data: CreateProductInput) {
-  const { images, ...rest } = data
+  const { images, variants, ...rest } = data
   return prisma.product.create({
     data: {
       ...rest,
       images: { create: images },
+      ...(variants && variants.length > 0 ? { variants: { create: variants } } : {}),
     },
     ...productWithImages,
   })
@@ -111,14 +117,18 @@ export function createProduct(data: CreateProductInput) {
 
 export async function updateProduct(
   id: string,
-  data: Partial<Omit<CreateProductInput, "images">> & {
+  data: Partial<Omit<CreateProductInput, "images" | "variants">> & {
     images?: CreateProductInput["images"]
+    variants?: CreateProductInput["variants"]
   }
 ) {
-  const { images, ...rest } = data
+  const { images, variants, ...rest } = data
 
   if (images) {
     await prisma.productImage.deleteMany({ where: { productId: id } })
+  }
+  if (variants) {
+    await prisma.productVariant.deleteMany({ where: { productId: id } })
   }
 
   return prisma.product.update({
@@ -126,6 +136,7 @@ export async function updateProduct(
     data: {
       ...rest,
       ...(images ? { images: { create: images } } : {}),
+      ...(variants && variants.length > 0 ? { variants: { create: variants } } : {}),
     },
     ...productWithImages,
   })
@@ -144,4 +155,15 @@ export function decrementStock(productId: string, quantity: number) {
     where: { id: productId },
     data: { stock: { decrement: quantity } },
   })
+}
+
+export function decrementVariantStock(variantId: string, quantity: number) {
+  return prisma.productVariant.update({
+    where: { id: variantId },
+    data: { stock: { decrement: quantity } },
+  })
+}
+
+export function getVariantById(variantId: string) {
+  return prisma.productVariant.findUnique({ where: { id: variantId } })
 }

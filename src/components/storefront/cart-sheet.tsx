@@ -43,7 +43,7 @@ export function CartSheet() {
             <div className="flex-1 overflow-y-auto px-6 py-4">
               <ul className="space-y-5">
                 {items.map((item) => (
-                  <li key={item.productId} className="flex gap-4">
+                  <li key={`${item.productId}::${item.variantId ?? ""}`} className="flex gap-4">
                     <div className="relative size-20 shrink-0 overflow-hidden rounded-md bg-muted">
                       {item.imageUrl && (
                         <Image
@@ -63,10 +63,15 @@ export function CartSheet() {
                           className="text-sm font-medium leading-snug hover:text-gold-600"
                         >
                           {item.name}
+                          {item.variantLabel && (
+                            <span className="block text-xs font-normal text-muted-foreground">
+                              {item.variantLabel}
+                            </span>
+                          )}
                         </Link>
                         <button
                           aria-label="Remover item"
-                          onClick={() => removeItem(item.productId)}
+                          onClick={() => removeItem(item.productId, item.variantId)}
                           className="text-muted-foreground hover:text-destructive"
                         >
                           <X className="size-4" />
@@ -77,7 +82,7 @@ export function CartSheet() {
                           <button
                             className="p-1.5 disabled:opacity-40"
                             disabled={item.quantity <= 1}
-                            onClick={() => setQuantity(item.productId, item.quantity - 1)}
+                            onClick={() => setQuantity(item.productId, item.quantity - 1, item.variantId)}
                             aria-label="Diminuir quantidade"
                           >
                             <Minus className="size-3" />
@@ -86,7 +91,7 @@ export function CartSheet() {
                           <button
                             className="p-1.5 disabled:opacity-40"
                             disabled={item.quantity >= item.stock}
-                            onClick={() => setQuantity(item.productId, item.quantity + 1)}
+                            onClick={() => setQuantity(item.productId, item.quantity + 1, item.variantId)}
                             aria-label="Aumentar quantidade"
                           >
                             <Plus className="size-3" />

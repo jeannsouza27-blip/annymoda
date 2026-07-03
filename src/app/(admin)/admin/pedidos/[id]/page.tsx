@@ -53,6 +53,11 @@ export default async function AdminOrderDetailPage({
                       >
                         {item.productNameSnapshot}
                       </Link>
+                      {(item.variantColorSnapshot || item.variantSizeSnapshot) && (
+                        <p className="text-xs text-muted-foreground">
+                          {[item.variantColorSnapshot, item.variantSizeSnapshot].filter(Boolean).join(" / ")}
+                        </p>
+                      )}
                       <p className="text-xs text-muted-foreground">
                         {item.quantity}x {formatCurrency(item.unitPriceCentsSnapshot)}
                       </p>

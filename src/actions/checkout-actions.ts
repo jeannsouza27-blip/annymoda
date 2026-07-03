@@ -6,12 +6,18 @@ import { getProductById } from "@/services/product-service"
 import { validateCoupon, incrementCouponUse } from "@/services/coupon-service"
 import { quoteShipping } from "@/services/shipping-service"
 import { createOrder, setOrderPreference } from "@/services/order-service"
-import { decrementStock } from "@/services/product-service"
+import { decrementStock, decrementVariantStock } from "@/services/product-service"
 import { createPaymentPreference, isMercadoPagoConfigured } from "@/lib/mercadopago"
 
 const checkoutSchema = z.object({
   items: z
-    .array(z.object({ productId: z.string(), quantity: z.number().int().min(1) }))
+    .array(
+      z.object({
+        productId: z.string(),
+        variantId: z.string().optional(),
+        quantity: z.number().int().min(1),
+      })
+    )
     .min(1, "Sua sacola está vazia."),
   couponCode: z.string().optional(),
   recipientName: z.string().min(2, "Informe o nome completo."),
@@ -43,7 +49,20 @@ export async function createOrderAndCheckout(input: unknown) {
     if (!product || !product.isActive) {
       return { success: false as const, error: `Produto indisponível na sacola.` }
     }
-    if (product.stock < item.quantity) {
+
+    let variant: (typeof product.variants)[number] | undefined
+    if (product.variants.length > 0) {
+      variant = product.variants.find((v) => v.id === item.variantId)
+      if (!variant) {
+        return {
+          success: false as const,
+          error: `Selecione cor e tamanho de "${product.name}" antes de finalizar a compra.`,
+        }
+      }
+      if (variant.stock < item.quantity) {
+        return { success: false as const, error: `Estoque insuficiente para "${product.name}".` }
+      }
+    } else if (product.stock < item.quantity) {
       return { success: false as const, error: `Estoque insuficiente para "${product.name}".` }
     }
 
@@ -51,6 +70,9 @@ export async function createOrderAndCheckout(input: unknown) {
     subtotalCents += totalCents
     resolvedItems.push({
       productId: product.id,
+      variantId: variant?.id,
+      variantColorSnapshot: variant?.color ?? undefined,
+      variantSizeSnapshot: variant?.size ?? undefined,
       productNameSnapshot: product.name,
       unitPriceCentsSnapshot: product.priceCents,
       quantity: item.quantity,
@@ -95,18 +117,36 @@ export async function createOrderAndCheckout(input: unknown) {
     neighborhood: data.neighborhood,
     city: data.city,
     state: data.state,
-    items: resolvedItems.map(({ productId, productNameSnapshot, unitPriceCentsSnapshot, quantity, totalCents }) => ({
-      productId,
-      productNameSnapshot,
-      unitPriceCentsSnapshot,
-      quantity,
-      totalCents,
-    })),
+    items: resolvedItems.map(
+      ({
+        productId,
+        variantId,
+        variantColorSnapshot,
+        variantSizeSnapshot,
+        productNameSnapshot,
+        unitPriceCentsSnapshot,
+        quantity,
+        totalCents,
+      }) => ({
+        productId,
+        variantId,
+        variantColorSnapshot,
+        variantSizeSnapshot,
+        productNameSnapshot,
+        unitPriceCentsSnapshot,
+        quantity,
+        totalCents,
+      })
+    ),
   })
 
   if (couponId) await incrementCouponUse(couponId)
-  for (const item of data.items) {
-    await decrementStock(item.productId, item.quantity)
+  for (const item of resolvedItems) {
+    if (item.variantId) {
+      await decrementVariantStock(item.variantId, item.quantity)
+    } else {
+      await decrementStock(item.productId, item.quantity)
+    }
   }
 
   if (!isMercadoPagoConfigured()) {

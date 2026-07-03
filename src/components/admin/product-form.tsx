@@ -31,8 +31,11 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Card, CardContent } from "@/components/ui/card"
+import { Plus, Trash2 } from "lucide-react"
 import { ImageUploader, type UploadedImage } from "@/components/admin/image-uploader"
 import { centsToReais, reaisToCents } from "@/components/admin/money-utils"
+
+type VariantRow = { color: string; size: string; stock: number }
 
 const formSchema = z.object({
   name: z.string().min(2, "Informe o nome do produto."),
@@ -66,6 +69,25 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     })) ?? []
   )
   const [imagesError, setImagesError] = React.useState<string | null>(null)
+  const [variants, setVariants] = React.useState<VariantRow[]>(
+    product?.variants.map((v) => ({
+      color: v.color ?? "",
+      size: v.size ?? "",
+      stock: v.stock,
+    })) ?? []
+  )
+
+  function addVariant() {
+    setVariants((prev) => [...prev, { color: "", size: "", stock: 0 }])
+  }
+
+  function updateVariant(index: number, patch: Partial<VariantRow>) {
+    setVariants((prev) => prev.map((v, i) => (i === index ? { ...v, ...patch } : v)))
+  }
+
+  function removeVariant(index: number) {
+    setVariants((prev) => prev.filter((_, i) => i !== index))
+  }
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -92,6 +114,8 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     }
     setImagesError(null)
 
+    const validVariants = variants.filter((v) => v.color.trim() || v.size.trim())
+
     const payload = {
       name: values.name,
       description: values.description,
@@ -110,6 +134,11 @@ export function ProductForm({ product, categories }: ProductFormProps) {
         altText: img.altText || undefined,
         isPrimary: img.isPrimary ?? index === 0,
         position: index,
+      })),
+      variants: validVariants.map((v) => ({
+        color: v.color.trim() || undefined,
+        size: v.size.trim() || undefined,
+        stock: v.stock,
       })),
     }
 
@@ -212,12 +241,15 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                 name="stock"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Estoque</FormLabel>
+                    <FormLabel>
+                      Estoque{variants.length > 0 ? " (ignorado com variações)" : ""}
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         min="0"
                         step="1"
+                        disabled={variants.length > 0}
                         value={field.value}
                         onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
                       />
@@ -301,6 +333,73 @@ export function ProductForm({ product, categories }: ProductFormProps) {
                 )}
               />
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label>Variações (cor e tamanho)</Label>
+                <p className="text-sm text-muted-foreground">
+                  Opcional. Adicione uma linha para cada combinação de cor/tamanho com estoque próprio.
+                  Se não usar variações, o campo &quot;Estoque&quot; acima é o que vale.
+                </p>
+              </div>
+              <Button type="button" variant="outline" size="sm" onClick={addVariant}>
+                <Plus className="size-4" />
+                Adicionar variação
+              </Button>
+            </div>
+
+            {variants.length > 0 && (
+              <div className="space-y-2">
+                {variants.map((variant, index) => (
+                  <div key={index} className="flex items-end gap-2 rounded-lg border border-border p-3">
+                    <div className="flex-1 space-y-1.5">
+                      <Label htmlFor={`variant-color-${index}`}>Cor</Label>
+                      <Input
+                        id={`variant-color-${index}`}
+                        placeholder="Ex.: Preto"
+                        value={variant.color}
+                        onChange={(e) => updateVariant(index, { color: e.target.value })}
+                      />
+                    </div>
+                    <div className="flex-1 space-y-1.5">
+                      <Label htmlFor={`variant-size-${index}`}>Tamanho</Label>
+                      <Input
+                        id={`variant-size-${index}`}
+                        placeholder="Ex.: M ou 40"
+                        value={variant.size}
+                        onChange={(e) => updateVariant(index, { size: e.target.value })}
+                      />
+                    </div>
+                    <div className="w-28 space-y-1.5">
+                      <Label htmlFor={`variant-stock-${index}`}>Estoque</Label>
+                      <Input
+                        id={`variant-stock-${index}`}
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={variant.stock}
+                        onChange={(e) =>
+                          updateVariant(index, { stock: e.target.valueAsNumber || 0 })
+                        }
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label="Remover variação"
+                      onClick={() => removeVariant(index)}
+                    >
+                      <Trash2 className="size-4 text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 

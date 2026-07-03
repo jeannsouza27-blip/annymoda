@@ -49,6 +49,9 @@ export type CreateOrderInput = {
   state: string
   items: {
     productId: string
+    variantId?: string
+    variantColorSnapshot?: string
+    variantSizeSnapshot?: string
     productNameSnapshot: string
     unitPriceCentsSnapshot: number
     quantity: number

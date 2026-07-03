@@ -5,6 +5,8 @@ import { persist } from "zustand/middleware"
 
 export type CartItem = {
   productId: string
+  variantId?: string
+  variantLabel?: string
   name: string
   slug: string
   priceCents: number
@@ -13,14 +15,18 @@ export type CartItem = {
   stock: number
 }
 
+function lineKey(productId: string, variantId?: string) {
+  return `${productId}::${variantId ?? ""}`
+}
+
 type CartState = {
   items: CartItem[]
   isOpen: boolean
   open: () => void
   close: () => void
   addItem: (item: Omit<CartItem, "quantity">, quantity?: number) => void
-  removeItem: (productId: string) => void
-  setQuantity: (productId: string, quantity: number) => void
+  removeItem: (productId: string, variantId?: string) => void
+  setQuantity: (productId: string, quantity: number, variantId?: string) => void
   clear: () => void
 }
 
@@ -32,11 +38,12 @@ export const useCart = create<CartState>()(
       open: () => set({ isOpen: true }),
       close: () => set({ isOpen: false }),
       addItem: (item, quantity = 1) => {
-        const existing = get().items.find((i) => i.productId === item.productId)
+        const key = lineKey(item.productId, item.variantId)
+        const existing = get().items.find((i) => lineKey(i.productId, i.variantId) === key)
         if (existing) {
           set({
             items: get().items.map((i) =>
-              i.productId === item.productId
+              lineKey(i.productId, i.variantId) === key
                 ? { ...i, quantity: Math.min(i.quantity + quantity, i.stock) }
                 : i
             ),
@@ -49,16 +56,20 @@ export const useCart = create<CartState>()(
           isOpen: true,
         })
       },
-      removeItem: (productId) =>
-        set({ items: get().items.filter((i) => i.productId !== productId) }),
-      setQuantity: (productId, quantity) =>
+      removeItem: (productId, variantId) => {
+        const key = lineKey(productId, variantId)
+        set({ items: get().items.filter((i) => lineKey(i.productId, i.variantId) !== key) })
+      },
+      setQuantity: (productId, quantity, variantId) => {
+        const key = lineKey(productId, variantId)
         set({
           items: get().items.map((i) =>
-            i.productId === productId
+            lineKey(i.productId, i.variantId) === key
               ? { ...i, quantity: Math.max(1, Math.min(quantity, i.stock)) }
               : i
           ),
-        }),
+        })
+      },
       clear: () => set({ items: [] }),
     }),
     { name: "anny-cart" }

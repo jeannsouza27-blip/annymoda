@@ -17,6 +17,12 @@ const imageSchema = z.object({
   position: z.number().optional(),
 })
 
+const variantSchema = z.object({
+  color: z.string().trim().optional(),
+  size: z.string().trim().optional(),
+  stock: z.number().int().min(0),
+})
+
 const productSchema = z.object({
   name: z.string().min(2, "Informe o nome do produto."),
   description: z.string().min(10, "Descreva o produto."),
@@ -29,6 +35,7 @@ const productSchema = z.object({
   isFeatured: z.boolean().optional(),
   installmentsMax: z.number().int().min(1).max(12).optional(),
   images: z.array(imageSchema).min(1, "Adicione ao menos uma imagem."),
+  variants: z.array(variantSchema).optional(),
 })
 
 const updateProductSchema = productSchema.partial()

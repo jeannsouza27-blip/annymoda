@@ -136,8 +136,9 @@ model Product {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  category      Category       @relation(fields: [categoryId], references: [id])
+  category      Category         @relation(fields: [categoryId], references: [id])
   images        ProductImage[]
+  variants      ProductVariant[]
   orderItems    OrderItem[]
   wishlistItems WishlistItem[]
   reviews       Review[]
@@ -157,6 +158,21 @@ model ProductImage {
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
+  @@index([productId])
+}
+
+model ProductVariant {
+  id        String   @id @default(cuid())
+  productId String
+  color     String?
+  size      String?
+  stock     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+
+  @@unique([productId, color, size])
   @@index([productId])
 }
 
@@ -202,16 +218,20 @@ model Order {
 }
 
 model OrderItem {
-  id                     String @id @default(cuid())
+  id                     String  @id @default(cuid())
   orderId                String
   productId              String
+  variantId              String?
   productNameSnapshot    String
+  variantColorSnapshot   String?
+  variantSizeSnapshot    String?
   unitPriceCentsSnapshot Int
   quantity               Int
   totalCents             Int
 
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
+  order   Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product         @relation(fields: [productId], references: [id])
+  variant ProductVariant? @relation(fields: [variantId], references: [id])
 
   @@index([orderId])
 }

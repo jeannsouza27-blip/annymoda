@@ -65,6 +65,11 @@ export default async function PedidoDetailPage({
               <div key={item.id} className="flex items-center justify-between gap-4 text-sm">
                 <div>
                   <p className="font-medium text-foreground">{item.productNameSnapshot}</p>
+                  {(item.variantColorSnapshot || item.variantSizeSnapshot) && (
+                    <p className="text-xs text-muted-foreground">
+                      {[item.variantColorSnapshot, item.variantSizeSnapshot].filter(Boolean).join(" / ")}
+                    </p>
+                  )}
                   <p className="text-muted-foreground">
                     {item.quantity} × {formatCurrency(item.unitPriceCentsSnapshot)}
                   </p>
